@@ -9,15 +9,6 @@ import (
 
 type Handle func(key string, data interface{})
 
-type node struct {
-	key string
-
-	rwLock        sync.RWMutex
-	isInReadyChan bool
-
-	msgQueue *queue.EsQueue
-}
-
 type Options struct {
 	nodeNum     int
 	workNum     int
@@ -53,6 +44,15 @@ func (opt Options) WithMsgCapacity(msgCapacity uint32) Options {
 func (opt Options) WithOneCallCnt(oneCallCnt int) Options {
 	opt.oneCallCnt = oneCallCnt
 	return opt
+}
+
+type node struct {
+	key string
+
+	rwLock        sync.RWMutex
+	isInReadyChan bool
+
+	msgQueue *queue.EsQueue
 }
 
 type Instance struct {
