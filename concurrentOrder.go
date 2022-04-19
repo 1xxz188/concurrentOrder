@@ -72,6 +72,12 @@ func NewInstance(opt Options) (*Instance, error) {
 	if opt.workNum <= 0 {
 		return nil, errors.New("concurrentOrder Init() workNum <= 0")
 	}
+	if opt.oneCallCnt <= 0 {
+		return nil, errors.New("concurrentOrder Init() oneCallCnt <= 0")
+	}
+	if opt.fn == nil {
+		return nil, errors.New("concurrentOrder Init() opt.fn == nil")
+	}
 
 	cmap.SHARD_COUNT = 256
 	instance := &Instance{

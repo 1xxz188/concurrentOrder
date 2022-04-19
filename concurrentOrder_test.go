@@ -13,13 +13,12 @@ import (
 )
 
 func TestPushMsg(t *testing.T) {
-	cmap.SHARD_COUNT = 256
-	testMap := cmap.New()
-
 	rand.Seed(time.Now().Unix())
+	cmap.SHARD_COUNT = 256
 
+	msgCnt := 1024
 	sendGoCnt := 100
-	msgCnt := 1000
+	testMap := cmap.New()
 
 	var revCnt int32
 	var sendCnt int32
@@ -35,15 +34,16 @@ func TestPushMsg(t *testing.T) {
 		if (oldVV + 1) != newVV {
 			panic("(oldVV + 1)!= newVV")
 		}
-		time.Sleep(time.Millisecond * time.Duration(rand.Intn(5)))
+		//time.Sleep(time.Millisecond * time.Duration(rand.Intn(5)))
 		testMap.Set(key, newVV)
 
 		atomic.AddInt32(&revCnt, 1)
 		v := atomic.LoadInt32(&revCnt)
 		if key == "100" && newVV%100 == 0 {
-			fmt.Println(newVV, v)
+			fmt.Printf("key[%s] value[%d] revCnt[%d]\n", key, newVV, v)
 		}
 	}
+
 	entity, err := NewInstance(DefaultOptions(fn))
 	require.NoError(t, err)
 
@@ -66,9 +66,12 @@ func TestPushMsg(t *testing.T) {
 			}
 		}(i)
 	}
+
 	time.Sleep(time.Millisecond * 10)
+	beginTm := time.Now()
 	close(beginChan)
 	wg.Wait()
+
 	overChan := make(chan struct{})
 	go func() {
 		for {
@@ -83,6 +86,6 @@ func TestPushMsg(t *testing.T) {
 
 	<-overChan
 	fmt.Println(atomic.LoadInt32(&revCnt), atomic.LoadInt32(&shouldRevCnt))
+	fmt.Println("Cost: ", time.Since(beginTm).String())
 	//require.Equal(t, shouldRevCnt, atomic.LoadInt32(&revCnt))
-	//wgMsg.Wait()
 }
