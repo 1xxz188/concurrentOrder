@@ -7,19 +7,30 @@ The same key keeps the callbacks called sequentially, and different keys can be 
 
 ## Demo
 ```
-func TestDemo(t *testing.T) {
-        exitChan := make(chan struct{})
-        
+package main
+
+import (
+	"fmt"
+	"github.com/1xxz188/concurrentOrder"
+)
+
+func main() {
+	exitChan := make(chan struct{})
+
 	fn := func(key string, data interface{}) {
 		fmt.Println(key, data)
 		close(exitChan)
 	}
-	
-	entity, err := NewInstance(DefaultOptions(fn))
-	require.NoError(t, err)
 
-	err = PushMsg(entity, "key", "value")
-	require.NoError(t, err)
+	entity, err := concurrentOrder.NewInstance(concurrentOrder.DefaultOptions(fn))
+	if err != nil {
+		panic(err)
+	}
+
+	err = concurrentOrder.PushMsg(entity, "key", "value")
+	if err != nil {
+		panic(err)
+	}
 	<-exitChan
 }
 ```
