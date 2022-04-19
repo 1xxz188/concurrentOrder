@@ -1,4 +1,4 @@
-module github.com/1xxz188/concurrent-order
+module github.com/1xxz188/concurrentOrder
 
 go 1.17
 
