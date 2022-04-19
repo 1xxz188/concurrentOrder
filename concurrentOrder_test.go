@@ -12,7 +12,23 @@ import (
 	"time"
 )
 
-func TestPushMsg(t *testing.T) {
+func TestDemo(t *testing.T) {
+	exitChan := make(chan struct{})
+
+	fn := func(key string, data interface{}) {
+		fmt.Println(key, data)
+		close(exitChan)
+	}
+
+	entity, err := NewInstance(DefaultOptions(fn))
+	require.NoError(t, err)
+
+	err = PushMsg(entity, "key", "value")
+	require.NoError(t, err)
+	<-exitChan
+}
+
+func TestMultiPushMsg(t *testing.T) {
 	rand.Seed(time.Now().Unix())
 	cmap.SHARD_COUNT = 256
 
